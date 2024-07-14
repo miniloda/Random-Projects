@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-fig2, ax = plt.subplots(1, 1, figsize=(192, 108))
+fig2, ax = plt.subplots(1, 1, figsize=(30, 30))
 fig, axs = plt.subplots(1, 2)
 
 
@@ -24,8 +24,7 @@ def plt_metrics(susceptible_counts, infected_counts, recovered_counts, perm_immu
     """
 
     node_colors = [get_node_color(G.nodes[node]['state']) for node in G.nodes]
-    # susceptible, infected, recovered, perm = get_node_metrics(G)
-    
+
     #Draw newtwork graph
     nx.draw(G, pos, node_color=np.array(node_colors), with_labels=True, node_size=500, font_color='white', ax=ax)
     ax.set_title(f'Timestep {t}')
@@ -53,7 +52,7 @@ def plt_metrics(susceptible_counts, infected_counts, recovered_counts, perm_immu
 
     plt.tight_layout()
     plt.pause(0.1)
-    if t == 19:
+    if t == 99:
         fig.savefig('watts_strogatz_model_output.png')
         fig2.savefig('watts_strogatz_model_metrics.png')
 
