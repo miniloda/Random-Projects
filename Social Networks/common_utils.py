@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-
-fig2, ax = plt.subplots(1, 1, figsize=(30, 30))
+import pandas as pd
+#fig2, ax = plt.subplots(1, 1, figsize=(30, 30))
 fig, axs = plt.subplots(1, 2)
 
 
@@ -25,37 +25,44 @@ def plt_metrics(susceptible_counts, infected_counts, recovered_counts, perm_immu
 
     node_colors = [get_node_color(G.nodes[node]['state']) for node in G.nodes]
 
-    #Draw newtwork graph
-    nx.draw(G, pos, node_color=np.array(node_colors), with_labels=True, node_size=500, font_color='white', ax=ax)
-    ax.set_title(f'Timestep {t}')
-    
+    # Draw newtwork graph
+    #nx.draw(G, pos, node_color=np.array(node_colors), with_labels=True, node_size=500, font_color='white', ax=ax)
+    #ax.set_title(f'Timestep {t}')
+    labelstr = '\n'.join((
+        "Blue: Susceptible",
+        "Red: Infected",
+        "Green: Recovered",
+        "Yellow: Permanently Immune",
+    ))
+    # set text at top right corner of figure
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    #ax.text(0.95, 0.05, labelstr, transform= ax.transAxes, fontsize=10)
     axs[0].cla()
     axs[0].axis('off')
     textstr = '\n'.join((
         f'Susceptible: {susceptible_counts[-1]:,d}',
         f'Infected: {infected_counts[-1]:,d}',
         f'Recovered: {recovered_counts[-1]:,d}',
-        f'Permanently Immune: {perm_immune_counts[-1]:,d}'
+        f'Permanently Immune: {perm_immune_counts[-1]:,d}',
+        f'Average Degree of Infected: {avg_degree_infected(G):.2f}',
     ))
-    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     axs[0].text(0.5, 0.5, textstr, transform=axs[0].transAxes, fontsize=10,
                 verticalalignment='center', horizontalalignment='center', bbox=props)
 
     axs[1].clear()
-    axs[1].plot(susceptible_counts, label='Susceptible')
-    axs[1].plot(infected_counts, label='Infected')
-    axs[1].plot(recovered_counts, label='Recovered')
-    axs[1].plot(perm_immune_counts, label='Immune')
+    axs[1].plot(susceptible_counts, label='Susceptible', color="blue")
+    axs[1].plot(infected_counts, label='Infected', color="red")
+    axs[1].plot(recovered_counts, label='Recovered', color="green")
+    axs[1].plot(perm_immune_counts, label='Immune', color="yellow")
     axs[1].set_xlabel('Time Steps')
     axs[1].set_ylabel('Number of Individuals')
     axs[1].legend()
-
+    axs[1].set_title("Watts Strogatz Model SIR Simulation")
     plt.tight_layout()
     plt.pause(0.1)
-    if t == 99:
-        fig.savefig('watts_strogatz_model_output.png')
-        fig2.savefig('watts_strogatz_model_metrics.png')
-
+    # if t == 99:
+    #    fig.savefig('watts_strogatz_model_output.png')
+    #    fig2.savefig('watts_strogatz_model_metrics.png')
 
 def get_node_color(state):
     """
@@ -92,3 +99,24 @@ def get_node_metrics(G):
     return susceptible, infected, recovered, perm_immune
 
 
+def avg_degree_infected(G):
+    tup_degree = nx.degree(G)
+    avg_degree_infected = sum([tup_degree[node] for node in G.nodes if G.nodes[node]['state'] == 'I']) / len(
+        [tup_degree[node] for node in G.nodes if G.nodes[node]['state'] == 'I'])
+    return avg_degree_infected
+
+
+def change_degree_type(deg):
+    """
+    This function takes a degree value as a string, removes any leading or trailing whitespaces, and removes parentheses,
+    then converts the last two characters of the resulting string to a numeric value.
+
+    Parameters:
+    deg (str): A string representing a degree value. The string should be in the format "(xx)" where "xx" is a two-digit number.
+
+    Returns:
+    int: The numeric value of the last two characters of the input string after removing leading/trailing whitespaces and parentheses.
+    """
+    deg = deg.strip()
+    deg = deg.strip("()")
+    return pd.to_numeric(deg[-2:])

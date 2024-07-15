@@ -20,7 +20,7 @@ def create_df(G):
     degree_list = calculate_degree(G)
     load_centrality_list = get_load_centrality(G)
 
-    df = pd.DataFrame({
+    df_md = pd.DataFrame({
         'Name': [person for person in famous_persons],
         'Betweenness Centrality': betweenness_centrality_list[:100],
         'Clustering Coefficient': clustering_coefficient_list[:100],
@@ -29,10 +29,17 @@ def create_df(G):
         'Load Centrality': load_centrality_list[:100]
 
     })
-    return df
+    df_csv = pd.DataFrame({
+        'Betweenness Centrality': betweenness_centrality_list,
+        'Clustering Coefficient': clustering_coefficient_list,
+        'Degree': degree_list,
+        'Eigenvector Centrality': eigeness_centrality_list,
+        'Load Centrality': load_centrality_list
+    })
+    return df_md, df_csv
 
 
-def df_to_md(G):
+def df_to_file(G):
     """
     This function generates a Markdown representation of a DataFrame containing information about the top 100 nodes
     in a given networkx graph G. The DataFrame is created by the `create_df` function. The Markdown string is then saved
@@ -45,13 +52,13 @@ def df_to_md(G):
     Returns:
     None: The function does not return any value. It saves the Markdown string to a file.
     """
-    df = create_df(G)
-    markdown_str = df.to_markdown(index=False)
+    df_md, df_csv = create_df(G)
+    markdown_str = df_md.to_markdown(index=False)
 
     # Save the Markdown string to a file
     with open('output.md', 'w') as file:
         file.write(markdown_str)
-
+    df_csv.to_csv('output.csv')
 
 def calculate_betweenness_centrality(G):
     """

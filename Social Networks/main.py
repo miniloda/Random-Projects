@@ -1,7 +1,7 @@
 import networkx as nx
 import random
 from common_utils import plt_metrics
-from metrics_util import df_to_md
+from metrics_util import df_to_file
 
 def initialize_network(num_node, init_infected):
     """
@@ -19,7 +19,7 @@ def initialize_network(num_node, init_infected):
     randomly selects init_infected nodes to be infected ('I'). The function also generates random positions
     for the nodes using the random_layout function from NetworkX.
     """
-    G = nx.watts_strogatz_graph(num_node, 10, 0.2)
+    G = nx.watts_strogatz_graph(num_node, 10, 1)
     for node in G.nodes:
         G.nodes[node]['state'] = 'S'
     initial_infected_nodes = random.sample(G.nodes(), init_infected)
@@ -64,7 +64,6 @@ def simulate_infection(G, infection_probability, recovery_probability, perm_immu
             G.nodes[node]['state'] = 'P'
 
 
-
 def count_states(G):
     susceptible_count = sum(G.nodes[node]['state'] == 'S' for node in G.nodes)
     infected_count = sum(G.nodes[node]['state'] == 'I' for node in G.nodes)
@@ -104,14 +103,15 @@ def watts_strogatz_model(num_nodes, initial_infected, infection_probability, rec
     return G
 
 if __name__ == "__main__":
-    num_nodes = 2000
+    num_nodes = 10000
     initial_infected = 1
     infection_probability = 0.05
     recovery_probability = 0.05
-    perm_immune_probability = 0.15
-    timesteps = 100
+    perm_immune_probability = 0.05
+    timesteps: int = 200
     G = watts_strogatz_model(num_nodes, initial_infected, infection_probability, recovery_probability, perm_immune_probability, timesteps)
-    df_to_md(G)
+    # df_to_file(G)
+
     k = input("press close to exit")
 
 

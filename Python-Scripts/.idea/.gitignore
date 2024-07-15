@@ -1,5 +1,3 @@
-
-.vscode/settings.json
 # Default ignored files
 /shelf/
 /workspace.xml
@@ -8,6 +6,3 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-**/.idea/
-Python-Scripts/.idea/misc.xml
-*.xml
